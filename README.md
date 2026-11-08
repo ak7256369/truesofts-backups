@@ -39,10 +39,12 @@ pg_restore -l backup.dump | grep ' TRIGGER auth users' > trigger.list
 pg_restore --no-owner -L trigger.list -d postgres backup.dump
 pg_restore --no-owner -n supabase_migrations -d postgres backup.dump
 
-# 4. REQUIRED for security: new projects let anonymous visitors call every function,
+# 4. REQUIRED for security: new projects let anonymous visitors use every function and table,
 #    so remove that and put back only the permissions the backup recorded.
-psql -c 'revoke all on all functions in schema public from anon, authenticated, service_role'
-pg_restore -l backup.dump | grep ' ACL public FUNCTION ' > acl.list
+for kind in functions tables sequences; do
+  psql -c "revoke all on all $kind in schema public from anon, authenticated, service_role"
+done
+pg_restore -l backup.dump | grep -E ' ACL public (FUNCTION|TABLE|SEQUENCE) ' > acl.list
 pg_restore --no-owner -L acl.list -d postgres backup.dump
 ```
 
