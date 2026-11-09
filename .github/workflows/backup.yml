@@ -2,7 +2,9 @@ name: Hourly backup
 
 on:
   schedule:
-    - cron: '17 * * * *'
+    # The database starts this job every hour (cron job hourly-backup-trigger in Supabase).
+    # GitHub's timer is unreliable, so it is only a safety net in case that stops.
+    - cron: '47 */6 * * *'
   workflow_dispatch:
 
 permissions:

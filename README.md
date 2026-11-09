@@ -1,5 +1,9 @@
 # TrueSofts database backups
 
+The Supabase database starts this job every hour, using a GitHub token kept in its Vault as
+`github_backup_token`. If that token expires, create a new one (Actions: read and write, this
+repository only) and update the Vault; until then only the 6-hourly fallback runs.
+
 Every hour this repository dumps the TrueSofts Supabase database, checks the dump, encrypts it
 and stores it under **Releases**: `hourly` (7 days) and `daily` (30 days). A failed run emails
 the repository owner.
